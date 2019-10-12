@@ -208,32 +208,16 @@ fn normal(object: &Object, pos: &Vector) -> Vector {
     }
 }
 
-fn plane_color_at(point_at_time: &Vector, plane: &Plane, scene: &Scene) -> Vector {
-    //     // Point from plane origin
-    //     // This is a complete hack to make up for my sad lack of lin alg. knowledge
+fn plane_color_at(point_at_time: &Vector, _plane: &Plane, scene: &Scene) -> Vector {
 
-    let from_origin = point_at_time.subtract(&plane.point);
-    let width = 2.0;
+    let width = 2;
 
-    let mut px = Vector::new(0.0, 1.0, 0.0);
-    let mut py = Vector::new(0.0, 0.0, 1.0);
+    let checker_counter = ((point_at_time.x as i32) % width)
+    + ((point_at_time.z as i32) % width)
+    + if point_at_time.x < 0.0 { 0 } else { 1 }
+    + if point_at_time.z < 0.0 { 0 } else { 1 };
 
-    if plane.normal.z != 0.0 {
-        py = Vector::new(1.0, 0.0, 1.0);
-    }
-
-    if plane.normal.y != 0.0 {
-        px = Vector::new(0.0, 0.0, 1.0);
-        py = Vector::new(1.0, 0.0, 0.0);
-    }
-
-    let cx = px.dot_product(&from_origin);
-    let cy = py.dot_product(&from_origin);
-
-    let x_cond = (cx < 0.0 && cx % width < -width / 2.0) || (cx > 0.0 && cx % width < width / 2.0);
-    let y_cond = (cy < 0.0 && cy % width < -width / 2.0) || (cy > 0.0 && cy % width < width / 2.0);
-
-    if (x_cond && !y_cond) || (y_cond && !x_cond) {
+    if checker_counter % 2 == 0 {
         return scene.checker[0].scale(1.0);
     }
 
