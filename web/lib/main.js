@@ -12,12 +12,12 @@ const getScene = () => {
         camera: {
             point: {
                 x: 0,
-                y: 0,
+                y: -5,
                 z: -10,
             },
             vector: {
                 x: 0,
-                y: 0,
+                y: .25,
                 z: 0
             },
             fov: 70
@@ -25,7 +25,7 @@ const getScene = () => {
         objects: [
             {
                 type: 'Sphere',
-                point: { x: -3, y: 0, z: 0 },
+                point: { x: -3, y: -1.0, z: 0 },
                 color: { x: 0, y: 0, z: 0 },
                 specular: 0.7,
                 lambert: 0.5,
@@ -34,7 +34,7 @@ const getScene = () => {
             },
             {
                 type: 'Sphere',
-                point: { x: 3, y: 0, z: 0 },
+                point: { x: 3, y: -1.0, z: 0 },
                 color: { x: 0, y: 0, z: 0 },
                 specular: 0.7,
                 lambert: 0.5,
@@ -43,7 +43,7 @@ const getScene = () => {
             },
             {
                 type: 'Sphere',
-                point: { x: 0, y: 0, z: 0 },
+                point: { x: 0, y: -1.5, z: 0 },
                 color: { x: 1.0, y: 1.0, z: 1.0 },
                 specular: 0.72,
                 lambert: 0.25,
@@ -52,54 +52,9 @@ const getScene = () => {
             },
             {
                 type: 'Plane',
-                point: { x: 0, y: 5, z: 0 },
+                point: { x: 0, y: 0, z: 0 },
                 normal: { x: 0, y: -1, z: 0 },
                 color: { x: 200, y: 200, z: 200 },
-                specular: 0.0,
-                lambert: 0.9,
-                ambient: 0.2,
-            },
-            {
-                type: 'Plane',
-                point: { x: 0, y: -5, z: 0 },
-                normal: { x: 0, y: 1, z: 0 },
-                color: { x: 100, y: 100, z: 100 },
-                specular: 0.0,
-                lambert: 0.9,
-                ambient: 0.2,
-            },
-            {
-                type: 'Plane',
-                point: { x: -5, y: 0, z: 0 },
-                normal: { x: 1, y: 0, z: 0 },
-                color: { x: 100, y: 100, z: 100 },
-                specular: 0.0,
-                lambert: 0.9,
-                ambient: 0.2,
-            },
-            {
-                type: 'Plane',
-                point: { x: 5, y: 0, z: 0 },
-                normal: { x: -1, y: 0, z: 0 },
-                color: { x: 100, y: 100, z: 100 },
-                specular: 0.0,
-                lambert: 0.9,
-                ambient: 0.2,
-            },
-            {
-                type: 'Plane',
-                point: { x: 0, y: 0, z: -12 },
-                normal: { x: 0, y: 0, z: 1 },
-                color: { x: 100, y: 100, z: 100 },
-                specular: 0.0,
-                lambert: 0.9,
-                ambient: 0.2,
-            },
-            {
-                type: 'Plane',
-                point: { x: 0, y: 0, z: 12 },
-                normal: { x: 0, y: 0, z: -1 },
-                color: { x: 100, y: 100, z: 100 },
                 specular: 0.0,
                 lambert: 0.9,
                 ambient: 0.2,
@@ -119,8 +74,8 @@ const getScene = () => {
         ],
         lights: [{
             x: 3,
-            y: 3,
-            z: 5
+            y: -5,
+            z: -2
         }]
     };
 };
@@ -149,11 +104,9 @@ const render = () => {
 
     scene.objects[0].point.x = Math.sin(inc) * 3.0;
     scene.objects[0].point.z = Math.cos(inc) * 3.0;
-    scene.objects[0].point.y = Math.sin(inc) * 2.0;
 
     scene.objects[1].point.x = Math.sin(inc) * -3.0;
     scene.objects[1].point.z = Math.cos(inc) * -3.0;
-    scene.objects[1].point.y = Math.cos(inc) * -2.0;
 
     inc += parseFloat(0.06);
 
