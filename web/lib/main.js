@@ -1,5 +1,4 @@
 import * as Wasm from './wasm'
-import * as JavaScript from './javascript'
 import Fps from './fps'
 
 const canvas = {
@@ -9,51 +8,47 @@ const canvas = {
 
 const getScene = () => {
 
-    const input = (selector) => {
-        return parseFloat(document.getElementById(selector).value);
-    };
-
     return {
         camera: {
             point: {
-                x: input('camera-x'),
-                y: input('camera-y'),
-                z: input('camera-z'),
+                x: 0,
+                y: 0,
+                z: -10,
             },
             vector: {
                 x: 0,
                 y: 0,
                 z: 0
             },
-            fov: input('camera-fov')
+            fov: 70
         },
         objects: [
             {
                 type: 'Sphere',
                 point: { x: -3, y: 0, z: 0 },
-                color: { x: input('obj-1-red'), y: input('obj-1-green'), z: input('obj-1-blue') },
-                specular: input('obj-1-specular') / 100,
-                lambert: input('obj-1-lambert') / 100,
-                ambient: input('obj-1-ambient') / 100,
-                radius: input('obj-1-radius') / 100
+                color: { x: 0, y: 0, z: 0 },
+                specular: 0.7,
+                lambert: 0.5,
+                ambient: 0.3,
+                radius: 1.0
             },
             {
                 type: 'Sphere',
                 point: { x: 3, y: 0, z: 0 },
-                color: { x: input('obj-2-red'), y: input('obj-2-green'), z: input('obj-2-blue') },
-                specular: input('obj-2-specular') / 100,
-                lambert: input('obj-2-lambert') / 100,
-                ambient: input('obj-2-ambient') / 100,
-                radius: input('obj-2-radius') / 100
+                color: { x: 0, y: 0, z: 0 },
+                specular: 0.7,
+                lambert: 0.5,
+                ambient: 0.3,
+                radius: 1.0
             },
             {
                 type: 'Sphere',
                 point: { x: 0, y: 0, z: 0 },
-                color: { x: input('obj-3-red'), y: input('obj-3-green'), z: input('obj-3-blue') },
-                specular: input('obj-3-specular') / 100,
-                lambert: input('obj-3-lambert') / 100,
-                ambient: input('obj-3-ambient') / 100,
-                radius: input('obj-3-radius') / 100
+                color: { x: 1.0, y: 1.0, z: 1.0 },
+                specular: 0.72,
+                lambert: 0.25,
+                ambient: 0.26,
+                radius: 1.5
             },
             {
                 type: 'Plane',
@@ -112,20 +107,20 @@ const getScene = () => {
         ],
         checker: [
             {
-                x: input('checker-color-1-red'),
-                y: input('checker-color-1-green'),
-                z: input('checker-color-1-blue')
+                x: 50,
+                y: 0,
+                z: 89
             },
             {
-                x: input('checker-color-2-red'),
-                y: input('checker-color-2-green'),
-                z: input('checker-color-2-blue')
+                x: 92,
+                y: 209,
+                z: 92
             }
         ],
         lights: [{
-            x: input('light-1-x'),
-            y: input('light-1-y'),
-            z: input('light-1-z')
+            x: 3,
+            y: 3,
+            z: 5
         }]
     };
 };
@@ -143,16 +138,8 @@ const renderWasm = (scene) => {
     }
 };
 
-const renderJs = (scene) => {
-
-    const data = JavaScript.render(canvas, scene);
-    putData(data);
-};
-
 let inc = 0;
-
 const fps = new Fps(250,  document.querySelector('.fps'));
-let wasm = true;
 
 const render = () => {
 
@@ -168,32 +155,11 @@ const render = () => {
     scene.objects[1].point.z = Math.cos(inc) * -3.0;
     scene.objects[1].point.y = Math.cos(inc) * -2.0;
 
-    inc += parseFloat(document.getElementById('orbit-speed').value / 250);
+    inc += parseFloat(0.06);
 
-    if (wasm) {
-        renderWasm(scene);
-    } else {
-        renderJs(scene);
-    }
+    renderWasm(scene);
 
     requestAnimationFrame(render);
 };
 
 requestAnimationFrame(render);
-
-document.querySelectorAll('.switch-container a')
-    .forEach((e) => e.addEventListener('click', (e) => {
-
-    const node = e.target;
-    if (node.innerText === 'WebAssembly') {
-        wasm = true;
-        document.querySelectorAll('.switch-container a')[0].classList = 'selected';
-        document.querySelectorAll('.switch-container a')[1].classList = '';
-    } else {
-        wasm = false;
-        document.querySelectorAll('.switch-container a')[1].classList = 'selected';
-        document.querySelectorAll('.switch-container a')[0].classList = '';
-    }
-
-    e.preventDefault();
-}));
