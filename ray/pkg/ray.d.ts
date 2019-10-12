@@ -1,3 +1,8 @@
 /* tslint:disable */
-export function binding(arg0: string, arg1: number, arg2: number): Float32Array;
-
+/**
+* @param {string} scene 
+* @param {number} width 
+* @param {number} height 
+* @returns {Float32Array} 
+*/
+export function binding(scene: string, width: number, height: number): Float32Array;

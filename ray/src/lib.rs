@@ -1,7 +1,5 @@
 // Configs
 
-#![feature(use_extern_macros, wasm_import_module, wasm_custom_section)]
-
 // Extern crates
 
 extern crate serde;
@@ -220,11 +218,11 @@ fn plane_color_at(point_at_time: &Vector, plane: &Plane, scene: &Scene) -> Vecto
     let mut px = Vector::new(0.0, 1.0, 0.0);
     let mut py = Vector::new(0.0, 0.0, 1.0);
 
-    if (plane.normal.z != 0.0) {
+    if plane.normal.z != 0.0 {
         py = Vector::new(1.0, 0.0, 1.0);
     }
 
-    if (plane.normal.y != 0.0) {
+    if plane.normal.y != 0.0 {
         px = Vector::new(0.0, 0.0, 1.0);
         py = Vector::new(1.0, 0.0, 0.0);
     }

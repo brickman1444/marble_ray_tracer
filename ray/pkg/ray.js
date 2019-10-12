@@ -1,7 +1,21 @@
-/* tslint:disable */
-import * as wasm from './ray_bg';
+import * as wasm from './ray_bg.wasm';
 
-let cachedEncoder = new TextEncoder('utf-8');
+let WASM_VECTOR_LEN = 0;
+
+let cachedTextEncoder = new TextEncoder('utf-8');
+
+const encodeString = (typeof cachedTextEncoder.encodeInto === 'function'
+    ? function (arg, view) {
+    return cachedTextEncoder.encodeInto(arg, view);
+}
+    : function (arg, view) {
+    const buf = cachedTextEncoder.encode(arg);
+    view.set(buf);
+    return {
+        read: arg.length,
+        written: buf.length
+    };
+});
 
 let cachegetUint8Memory = null;
 function getUint8Memory() {
@@ -12,11 +26,41 @@ function getUint8Memory() {
 }
 
 function passStringToWasm(arg) {
-    
-    const buf = cachedEncoder.encode(arg);
-    const ptr = wasm.__wbindgen_malloc(buf.length);
-    getUint8Memory().set(buf, ptr);
-    return [ptr, buf.length];
+
+    let len = arg.length;
+    let ptr = wasm.__wbindgen_malloc(len);
+
+    const mem = getUint8Memory();
+
+    let offset = 0;
+
+    for (; offset < len; offset++) {
+        const code = arg.charCodeAt(offset);
+        if (code > 0x7F) break;
+        mem[ptr + offset] = code;
+    }
+
+    if (offset !== len) {
+        if (offset !== 0) {
+            arg = arg.slice(offset);
+        }
+        ptr = wasm.__wbindgen_realloc(ptr, len, len = offset + arg.length * 3);
+        const view = getUint8Memory().subarray(ptr + offset, ptr + len);
+        const ret = encodeString(arg, view);
+
+        offset += ret.written;
+    }
+
+    WASM_VECTOR_LEN = offset;
+    return ptr;
+}
+
+let cachegetInt32Memory = null;
+function getInt32Memory() {
+    if (cachegetInt32Memory === null || cachegetInt32Memory.buffer !== wasm.memory.buffer) {
+        cachegetInt32Memory = new Int32Array(wasm.memory.buffer);
+    }
+    return cachegetInt32Memory;
 }
 
 let cachegetFloat32Memory = null;
@@ -30,53 +74,18 @@ function getFloat32Memory() {
 function getArrayF32FromWasm(ptr, len) {
     return getFloat32Memory().subarray(ptr / 4, ptr / 4 + len);
 }
-
-let cachedGlobalArgumentPtr = null;
-function globalArgumentPtr() {
-    if (cachedGlobalArgumentPtr === null) {
-        cachedGlobalArgumentPtr = wasm.__wbindgen_global_argument_ptr();
-    }
-    return cachedGlobalArgumentPtr;
-}
-
-let cachegetUint32Memory = null;
-function getUint32Memory() {
-    if (cachegetUint32Memory === null || cachegetUint32Memory.buffer !== wasm.memory.buffer) {
-        cachegetUint32Memory = new Uint32Array(wasm.memory.buffer);
-    }
-    return cachegetUint32Memory;
-}
 /**
-* @param {string} arg0
-* @param {number} arg1
-* @param {number} arg2
+* @param {string} scene
+* @param {number} width
+* @param {number} height
 * @returns {Float32Array}
 */
-export function binding(arg0, arg1, arg2) {
-    const [ptr0, len0] = passStringToWasm(arg0);
-    const retptr = globalArgumentPtr();
-    wasm.binding(retptr, ptr0, len0, arg1, arg2);
-    const mem = getUint32Memory();
-    const ptr = mem[retptr / 4];
-    const len = mem[retptr / 4 + 1];
-    
-    const realRet = getArrayF32FromWasm(ptr, len).slice();
-    wasm.__wbindgen_free(ptr, len * 4);
-    return realRet;
-    
+export function binding(scene, width, height) {
+    const retptr = 8;
+    const ret = wasm.binding(retptr, passStringToWasm(scene), WASM_VECTOR_LEN, width, height);
+    const memi32 = getInt32Memory();
+    const v0 = getArrayF32FromWasm(memi32[retptr / 4 + 0], memi32[retptr / 4 + 1]).slice();
+    wasm.__wbindgen_free(memi32[retptr / 4 + 0], memi32[retptr / 4 + 1] * 4);
+    return v0;
 }
-
-let cachedDecoder = new TextDecoder('utf-8');
-
-function getStringFromWasm(ptr, len) {
-    return cachedDecoder.decode(getUint8Memory().subarray(ptr, ptr + len));
-}
-
-export function __wbindgen_throw(ptr, len) {
-    throw new Error(getStringFromWasm(ptr, len));
-}
-
-export function __wbindgen_fmodf(a, b) { return a % b; }
-
-export function __wbindgen_Math_tan(x) { return Math.tan(x); }
 

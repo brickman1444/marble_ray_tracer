@@ -3,14 +3,13 @@
   "collaborators": [
     "Matt Harrison <hi@matt-harrison.com>"
   ],
-  "description": null,
   "version": "0.1.0",
-  "license": null,
-  "repository": null,
   "files": [
     "ray_bg.wasm",
+    "ray.js",
     "ray.d.ts"
   ],
-  "main": "ray.js",
-  "types": "ray.d.ts"
+  "module": "ray.js",
+  "types": "ray.d.ts",
+  "sideEffects": "false"
 }
