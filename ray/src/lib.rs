@@ -66,6 +66,11 @@ pub struct Scene {
     pub checker: Vec<Vector>,
 }
 
+pub struct Intersection<'a> {
+    pub distance: f32,
+    pub collided_object: &'a Object,
+}
+
 #[wasm_bindgen]
 pub fn binding(scene: String, width: f32, height: f32) -> Vec<f32> {
     let s: Scene = serde_json::from_str(&scene).unwrap();
@@ -120,47 +125,49 @@ fn trace(ray: &Ray, scene: &Scene, depth: usize) -> Option<Vector> {
 
     let dist_object = intersect_scene(ray, scene);
 
-    match dist_object.0 {
+    match dist_object {
         None => Some(Vector::zero()),
-        Some(distance) => {
-            let collision = dist_object.1;
-            match collision {
-                None => Some(Vector::zero()),
-                Some(object) => {
-                    let point_in_time = ray.point.add(&ray.vector.scale(distance));
-                    Some(surface(
-                        &ray,
-                        &scene,
-                        &object,
-                        &point_in_time,
-                        &normal(&object, &point_in_time),
-                        depth,
-                    ))
-                }
-            }
+        Some(dist_object) => {
+            let point_in_time = ray.point.add(&ray.vector.scale(dist_object.distance));
+            Some(surface(
+                &ray,
+                &scene,
+                &dist_object.collided_object,
+                &point_in_time,
+                &normal(&dist_object.collided_object, &point_in_time),
+                depth,
+            ))
         }
     }
 }
 
-fn closer(a: &Option<f32>, b: &Option<f32>) -> bool {
-    match a {
-        None => false,
-        Some(a_distance) => match b {
-            None => a_distance > &SELF_INTERSECTION_THRESHOLD,
-            Some(b_distance) => {
-                a_distance > &SELF_INTERSECTION_THRESHOLD && a_distance < b_distance
-            }
-        },
-    }
-}
-
-fn intersect_scene<'a>(ray: &Ray, scene: &'a Scene) -> (Option<f32>, Option<&'a Object>) {
-    let mut closest = (None, None);
+fn intersect_scene<'a>(ray: &Ray, scene: &'a Scene) -> (Option<Intersection<'a>>) {
+    let mut closest = None;
 
     for object in &scene.objects {
-        let distance = object_intersection(object, ray);
-        if closer(&distance, &closest.0) {
-            closest = (distance, Some(object));
+        let distance: Option<f32> = object_intersection(object, ray);
+        closest = match distance {
+            None => closest,
+            Some(some_distance) => {
+                if some_distance > SELF_INTERSECTION_THRESHOLD {
+                    match closest {
+                        None => Some( Intersection { distance: some_distance, collided_object: object }),
+                        Some(some_closest) => {
+                            if some_distance < some_closest.distance {
+                                Some( Intersection { distance: some_distance, collided_object: object })
+                            }
+                            else
+                            {
+                                Some(some_closest)
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    closest
+                }
+            }
         }
     }
 
@@ -285,10 +292,10 @@ fn is_light_visible(point: &Vector, scene: &Scene, light: &Vector) -> bool {
         point,
         vector: point_to_light_vector.unit(),
     };
-    let (dist, _) = intersect_scene(&ray, scene);
-    match dist {
+    let intersection = intersect_scene(&ray, scene);
+    match intersection {
         None => true,
-        Some(distance) => distance > distance_to_light,
+        Some(some_intersection) => some_intersection.distance > distance_to_light,
     }
 }
 
