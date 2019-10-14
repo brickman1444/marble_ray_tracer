@@ -1,4 +1,5 @@
 import * as Wasm from './wasm'
+import WasmWorker from 'Worker-Loader!./worker.js'
 import Fps from './fps'
 
 const canvas = {
@@ -95,6 +96,9 @@ const renderWasm = (scene) => {
 
 let inc = 0;
 const fps = new Fps(250,  document.querySelector('.fps'));
+
+let worker = new WasmWorker();
+worker.postMessage(null);
 
 const render = () => {
 
