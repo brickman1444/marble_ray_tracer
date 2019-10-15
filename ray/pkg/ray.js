@@ -78,11 +78,15 @@ function getArrayF32FromWasm(ptr, len) {
 * @param {string} scene
 * @param {number} width
 * @param {number} height
+* @param {number} x_pixel_start
+* @param {number} x_pixel_end
+* @param {number} y_pixel_start
+* @param {number} y_pixel_end
 * @returns {Float32Array}
 */
-export function binding(scene, width, height) {
+export function binding(scene, width, height, x_pixel_start, x_pixel_end, y_pixel_start, y_pixel_end) {
     const retptr = 8;
-    const ret = wasm.binding(retptr, passStringToWasm(scene), WASM_VECTOR_LEN, width, height);
+    const ret = wasm.binding(retptr, passStringToWasm(scene), WASM_VECTOR_LEN, width, height, x_pixel_start, x_pixel_end, y_pixel_start, y_pixel_end);
     const memi32 = getInt32Memory();
     const v0 = getArrayF32FromWasm(memi32[retptr / 4 + 0], memi32[retptr / 4 + 1]).slice();
     wasm.__wbindgen_free(memi32[retptr / 4 + 0], memi32[retptr / 4 + 1] * 4);

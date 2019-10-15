@@ -72,12 +72,12 @@ pub struct Intersection<'a> {
 }
 
 #[wasm_bindgen]
-pub fn binding(scene: String, width: f32, height: f32) -> Vec<f32> {
+pub fn binding(scene: String, width: f32, height: f32, x_pixel_start: u32, x_pixel_end: u32, y_pixel_start: u32, y_pixel_end: u32) -> Vec<f32> {
     let s: Scene = serde_json::from_str(&scene).unwrap();
-    render(s, width, height)
+    render(s, width, height, x_pixel_start, x_pixel_end, y_pixel_start, y_pixel_end)
 }
 
-pub fn render(scene: Scene, width: f32, height: f32) -> Vec<f32> {
+pub fn render(scene: Scene, width: f32, height: f32, x_pixel_start: u32, x_pixel_end: u32, y_pixel_start: u32, y_pixel_end: u32) -> Vec<f32> {
     let mut result = Vec::new();
     let camera = &scene.camera;
 
@@ -99,8 +99,8 @@ pub fn render(scene: Scene, width: f32, height: f32) -> Vec<f32> {
         vector: Vector::up(),
     };
 
-    for y in 0..height as u32 {
-        for x in 0..width as u32 {
+    for y in y_pixel_start..y_pixel_end as u32 {
+        for x in x_pixel_start..x_pixel_end as u32 {
             let x_comp = vp_right.scale((x as f32 * pixel_width) - half_width);
             let y_comp = vp_up.scale((y as f32 * pixel_height) - half_height);
 

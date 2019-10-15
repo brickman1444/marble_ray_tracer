@@ -7,7 +7,7 @@ import('ray').then((Ray) => {
 
     _render = function (canvas, scene) {
         const { width, height } = canvas;
-        return Ray.binding(JSON.stringify(scene), width, height);
+        return Ray.binding(JSON.stringify(scene), width, height, 0, width, 0, height);
     };
 });
 
