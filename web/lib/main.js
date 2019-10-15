@@ -88,7 +88,18 @@ const putData = (data) => {
 
 const renderWasm = (scene) => {
 
-    const data = Wasm.render(canvas, scene);
+    const event_data = { 
+        scene: scene,
+        width: canvas.width,
+        height: canvas.height,
+        x_pixel_start: 0,
+        x_pixel_end: canvas.width,
+        y_pixel_start: 0,
+        y_pixel_end: canvas.height
+    };
+
+    const data = Wasm.render(event_data);
+
     if (data) {         // may return undefined if wasm module not loaded
         putData(data);
     }

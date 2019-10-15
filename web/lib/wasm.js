@@ -5,14 +5,20 @@ import('ray').then((Ray) => {
 
     rayLoaded = true;
 
-    _render = function (canvas, scene) {
-        const { width, height } = canvas;
-        return Ray.binding(JSON.stringify(scene), width, height, 0, width, 0, height);
+    _render = function (event_data) {
+        return Ray.binding(
+            JSON.stringify(event_data.scene),
+            event_data.width,
+            event_data.height,
+            event_data.x_pixel_start,
+            event_data.x_pixel_end,
+            event_data.y_pixel_start,
+            event_data.y_pixel_end);
     };
 });
 
-export function render(canvas, scene) {
+export function render(event_data) {
     if (rayLoaded) {
-        return _render(canvas, scene);
+        return _render(event_data);
     }
 }
