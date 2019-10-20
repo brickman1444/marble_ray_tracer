@@ -1,5 +1,9 @@
 
+import * as WASM from "./wasm"
 
 onmessage = function(eventData) {
-    console.log("message received")
+
+    WASM.render(eventData);
+
+    console.log("message received in worker")
 }

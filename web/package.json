@@ -10,8 +10,7 @@
     "author": "Matt Harrison <hi@matt-harrison.com>",
     "license": "BSD-3-Clause",
     "dependencies": {
-        "ray": "file://../ray/pkg",
-        "worker-loader": "2.0.0"
+        "ray": "file://../ray/pkg"
     },
     "devDependencies": {
         "webpack": "^4.6.0",

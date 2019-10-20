@@ -1,6 +1,6 @@
 const path = require('path');
 
-module.exports = {
+const mainConfig = {
     entry: './lib/main.js',
     output: {
         path: path.resolve(__dirname, 'public'),
@@ -8,3 +8,15 @@ module.exports = {
     },
     mode: 'production'
 };
+
+const workerConfig = {
+    entry: './lib/worker.js',
+    output: {
+        path: path.resolve(__dirname, 'public'),
+        filename: 'worker.js',
+    },
+    mode: 'production',
+    target: "webworker"
+};
+
+module.exports = [mainConfig, workerConfig];
