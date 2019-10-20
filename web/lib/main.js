@@ -85,6 +85,19 @@ const putData = (data) => {
     ctx.putImageData(new ImageData(new Uint8ClampedArray(data), canvas.width, canvas.height), 0, 0);
 };
 
+let worker = new Worker('./worker.js');
+
+worker.onmessage = (event_data) => {
+
+    console.log('message received in main');
+
+    if (event_data.data) {         // may return undefined if wasm module not loaded
+        putData(event_data.data);
+    }
+
+    requestAnimationFrame(render);
+};
+
 const renderWasm = (scene) => {
 
     const event_data = { 
@@ -97,18 +110,11 @@ const renderWasm = (scene) => {
         y_pixel_end: canvas.height
     };
 
-    const data = Wasm.render(event_data);
-
-    if (data) {         // may return undefined if wasm module not loaded
-        putData(data);
-    }
+    worker.postMessage(event_data);
 };
 
 let inc = 0;
 const fps = new Fps(250,  document.querySelector('.fps'));
-
-let worker = new Worker('./worker.js');
-worker.postMessage(null);
 
 const render = () => {
 
@@ -125,8 +131,6 @@ const render = () => {
     inc += parseFloat(0.06);
 
     renderWasm(scene);
-
-    requestAnimationFrame(render);
 };
 
 requestAnimationFrame(render);
