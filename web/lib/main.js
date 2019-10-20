@@ -80,9 +80,10 @@ const getScene = () => {
     };
 };
 
+const canvasContext2D = document.getElementById('canvas').getContext('2d');
+
 const putData = (data) => {
-    const ctx = document.getElementById('canvas').getContext('2d');
-    ctx.putImageData(new ImageData(new Uint8ClampedArray(data), canvas.width, canvas.height), 0, 0);
+    canvasContext2D.putImageData(new ImageData(new Uint8ClampedArray(data), canvas.width, canvas.height), 0, 0);
 };
 
 let worker = new Worker('./worker.js');
