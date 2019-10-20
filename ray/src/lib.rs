@@ -239,7 +239,7 @@ fn surface(
     normal: &Vector,
     depth: usize,
 ) -> Vector {
-    let (b, lambert, specular, ambient) = match object {
+    let (object_color, lambert, specular, ambient) = match object {
         Object::Plane(obj) => (
             plane_color_at(point_at_time, obj, scene),
             obj.lambert,
@@ -248,7 +248,7 @@ fn surface(
         ),
         Object::Sphere(obj) => (obj.color.scale(1.0), obj.lambert, obj.specular, obj.ambient),
     };
-    let mut c = Vector::zero();
+    let mut output_color = Vector::zero();
     let mut lambert_amount = 0.0;
 
     if lambert > 0.0 {
@@ -273,7 +273,7 @@ fn surface(
         let reflected_color = trace(&reflected_ray, scene, depth + 1);
         match reflected_color {
             Some(color) => {
-                c = c.add(&color.scale(specular));
+                output_color = output_color.add(&color.scale(specular));
             }
             _ => {}
         }
@@ -281,7 +281,7 @@ fn surface(
 
     lambert_amount = min(lambert_amount, 1.0);
 
-    c.add3(&b.scale(lambert_amount * lambert), &b.scale(ambient))
+    output_color.add3(&object_color.scale(lambert_amount * lambert), &object_color.scale(ambient))
 }
 
 fn is_light_visible(point: &Vector, scene: &Scene, light: &Vector) -> bool {
