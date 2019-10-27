@@ -258,7 +258,7 @@ fn surface(
         ),
         Object::Sphere(obj) => (obj.color.scale(1.0), obj.lambert, obj.specular, obj.ambient),
     };
-    let mut output_color = Vector::zero();
+
     let mut lambert_amount = 0.0;
 
     if lambert > 0.0 {
@@ -275,6 +275,7 @@ fn surface(
         }
     }
 
+    let mut specular_reflection_color = Vector::zero();
     if specular > 0.0 {
         let reflected_ray = Ray {
             point: point_at_time,
@@ -283,7 +284,9 @@ fn surface(
         let reflected_color = trace(&reflected_ray, scene, depth + 1);
         match reflected_color {
             Some(color) => {
-                output_color = output_color.add(&color.scale(specular));
+                // Multiplying the reflected color by the object color is only valid for conductors (metals) and not dielectrics
+                // Reference: https://www.scratchapixel.com/lessons/3d-basic-rendering/phong-shader-BRDF
+                specular_reflection_color = specular_reflection_color.add(&color.multiply(&object_color).scale(specular / 256.0));
             }
             _ => {}
         }
@@ -291,7 +294,7 @@ fn surface(
 
     lambert_amount = min(lambert_amount, 1.0);
 
-    output_color = output_color.add3(&object_color.scale(lambert_amount * lambert), &object_color.scale(ambient));
+    let output_color = specular_reflection_color.add3(&object_color.scale(lambert_amount * lambert), &object_color.scale(ambient));
 
     let distance_fog_lerp_scale: f32 = (time - scene.distance_fog.start_distance) / (scene.distance_fog.length);
 

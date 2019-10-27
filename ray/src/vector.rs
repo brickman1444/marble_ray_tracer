@@ -46,6 +46,14 @@ impl Vector {
         }
     }
 
+    pub fn multiply(&self, v: &Vector) -> Vector {
+        Vector {
+            x: (self.x * v.x),
+            y: (self.y * v.y),
+            z: (self.z * v.z),
+        }
+    }
+
     pub fn scale(&self, factor: f32) -> Vector {
         Vector {
             x: self.x * factor,

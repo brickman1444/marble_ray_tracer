@@ -27,7 +27,7 @@ const getScene = () => {
                 type: 'Sphere',
                 point: { x: -3, y: -1.0, z: 0 },
                 color: { x: 200, y: 0, z: 0 },
-                specular: 0.7,
+                specular: 0.8,
                 lambert: 0.2,
                 ambient: 0.2,
                 radius: 1.0
@@ -36,7 +36,7 @@ const getScene = () => {
                 type: 'Sphere',
                 point: { x: 3, y: -1.0, z: 0 },
                 color: { x: 0, y: 200, z: 0 },
-                specular: 0.7,
+                specular: 0.8,
                 lambert: 0.2,
                 ambient: 0.2,
                 radius: 1.0
@@ -45,7 +45,7 @@ const getScene = () => {
                 type: 'Sphere',
                 point: { x: 0, y: -1.5, z: 0 },
                 color: { x: 0.0, y: 0, z: 200 },
-                specular: 0.72,
+                specular: 0.8,
                 lambert: 0.2,
                 ambient: 0.2,
                 radius: 1.5
