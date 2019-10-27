@@ -59,11 +59,19 @@ pub struct Plane {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct DistanceFog {
+    pub start_distance: f32,
+    pub length: f32,
+    pub color: Vector,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Scene {
     pub camera: Camera,
     pub objects: Vec<Object>,
     pub lights: Vec<Vector>,
     pub checker: Vec<Vector>,
+    pub distance_fog: DistanceFog,
 }
 
 pub struct Intersection<'a> {
@@ -136,6 +144,7 @@ fn trace(ray: &Ray, scene: &Scene, depth: usize) -> Option<Vector> {
                 &point_in_time,
                 &normal(&dist_object.collided_object, &point_in_time),
                 depth,
+                dist_object.distance,
             ))
         }
     }
@@ -238,6 +247,7 @@ fn surface(
     point_at_time: &Vector,
     normal: &Vector,
     depth: usize,
+    time: f32
 ) -> Vector {
     let (object_color, lambert, specular, ambient) = match object {
         Object::Plane(obj) => (
@@ -281,7 +291,11 @@ fn surface(
 
     lambert_amount = min(lambert_amount, 1.0);
 
-    output_color.add3(&object_color.scale(lambert_amount * lambert), &object_color.scale(ambient))
+    output_color = output_color.add3(&object_color.scale(lambert_amount * lambert), &object_color.scale(ambient));
+
+    let distance_fog_lerp_scale: f32 = (time - scene.distance_fog.start_distance) / (scene.distance_fog.length);
+
+    vector::lerp(&output_color, &scene.distance_fog.color, distance_fog_lerp_scale)
 }
 
 fn is_light_visible(point: &Vector, scene: &Scene, light: &Vector) -> bool {

@@ -54,6 +54,14 @@ impl Vector {
         }
     }
 
+    pub fn copy(&self) -> Vector {
+        Vector {
+            x: self.x,
+            y: self.y,
+            z: self.z,
+        }
+    }
+
     pub fn unit(&self) -> Vector {
         self.scale(1.0 / self.length())
     }
@@ -99,5 +107,17 @@ impl Vector {
         let d = normal.scale(a);
         let e = d.scale(2.0);
         self.subtract(&e)
+    }
+}
+
+pub fn lerp(start: &Vector, end: &Vector, t: f32) -> Vector {
+    if t < 0.0 {
+        start.copy()
+    }
+    else if t > 1.0 {
+        end.copy()
+    }
+    else {
+        end.subtract(start).scale(t).add(start)
     }
 }

@@ -76,7 +76,16 @@ const getScene = () => {
             x: 3,
             y: -5,
             z: -2
-        }]
+        }],
+        distance_fog: {
+            start_distance: 5,
+            length: 120,
+            color: {
+                x: 28,
+                y: 28,
+                z: 28
+            }
+        }
     };
 };
 
